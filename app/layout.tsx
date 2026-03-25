@@ -88,9 +88,9 @@ export const metadata: Metadata = {
       { url: '/icon-vt.png', type: 'image/png', sizes: '192x192' },
     ],
     apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/icon-vt.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: ['/ficon-vt.png'],
+    shortcut: ['/icon-vt.png'],
   },
   manifest: '/manifest.json',
   verification: {
@@ -190,7 +190,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "Vanadium Tech",
               "url": "https://vanadiumtech.com.mx",
-              "logo": "https://vanadiumtech.com.mx/logo.png",
+              "logo": "https://vanadiumtech.com.mx/icon-vt.png",
               "sameAs": [
                 "https://www.linkedin.com/company/vanadium-tech",
                 "https://twitter.com/vanadiumtech",
