@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata, Viewport } from 'next'
 import { Inter, Sora } from 'next/font/google'
 import './globals.scss'
@@ -121,9 +122,24 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} ${sora.variable}`}>
       <head>
+        {/* Google Tag Manager - Script en head */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-NCC2SCH8');
+            `,
+          }}
+        />
+        {/* End Google Tag Manager */}
+        
         {/* Preconexión a dominios externos para mejorar rendimiento */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
         
         {/* Meta tags adicionales para SEO */}
         <meta name="geo.region" content="MX-DIF" />
@@ -241,7 +257,20 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Google Tag Manager (noscript) - Justo después de la etiqueta de apertura <body> */}
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com/ns.html?id=GTM-NCC2SCH8"
+            height="0" 
+            width="0" 
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
+        
+        {children}
+      </body>
     </html>
   )
 }
