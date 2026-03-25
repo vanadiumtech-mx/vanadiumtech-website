@@ -18,7 +18,8 @@
     "nodemailer": "^8.0.4",
     "prisma": "^6.12.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "resend": "^6.9.4"
   },
   "devDependencies": {
     "@types/node": "^20.19.37",

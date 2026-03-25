@@ -1,38 +1,66 @@
-// app/contacto/page.tsx (actualizado)
+// app/contacto/page.tsx
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
 import Header from '@/app/components/Header/Header'
 import Footer from '@/app/components/Footer/Footer'
-import ContactForm from '@/app/components/ContactForm/ContactForm'
 import styles from './page.module.scss'
-import NewsletterForm from '../components/Newsletter/Newsletter'
 
 export default function ContactoPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    service: '',
+    message: ''
+  })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    
+    // Simular envío de formulario
+    setTimeout(() => {
+      setIsSubmitting(false)
+      setSubmitStatus('success')
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+    }, 1500)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
   const contactInfo = [
     {
       icon: '📍',
       title: 'Oficina Principal',
       details: [
-        'Av. Paseo de la Reforma 123',
-        'Col. Juárez, CDMX',
-        'C.P. 06600, México'
+        'Emiliano Zapata 16',
+        'Col. Centro Acolman',
+        'C.P. 55870, Edo. México'
       ]
     },
     {
       icon: '📞',
       title: 'Teléfono',
       details: [
-        '(55) 1234 5678',
-        '(55) 8765 4321'
+        '(55) 13763758',
       ]
     },
     {
       icon: '✉️',
       title: 'Email',
       details: [
-        'contacto@vanadiumtech.com.mx',
+        'contact@vanadiumtech.com.mx',
         'ventas@vanadiumtech.com.mx'
       ]
     },
@@ -44,6 +72,18 @@ export default function ContactoPage() {
         'Sábados: 9:00 - 14:00'
       ]
     }
+  ]
+
+  const serviceOptions = [
+    'Selecciona un servicio',
+    'Infraestructura en Redes',
+    'Telecomunicaciones',
+    'Desarrollo de Software',
+    'Integración de Sistemas',
+    'Centros de Datos',
+    'Ciberseguridad',
+    'Soluciones para Gobierno',
+    'Otro'
   ]
 
   return (
@@ -81,7 +121,98 @@ export default function ContactoPage() {
                 className={styles.formContainer}
               >
                 <h2>Envíanos un <span className="accent-text">mensaje</span></h2>
-                <ContactForm type="contact" />
+                <form onSubmit={handleSubmit} className={styles.form}>
+                  <div className={styles.formGroup}>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Nombre completo *"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Correo electrónico *"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Teléfono *"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <input
+                        type="text"
+                        name="company"
+                        placeholder="Empresa / Institución"
+                        value={formData.company}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <select
+                        name="service"
+                        value={formData.service}
+                        onChange={handleChange}
+                        required
+                      >
+                        {serviceOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.formGroup}>
+                    <textarea
+                      name="message"
+                      placeholder="Mensaje *"
+                      rows={5}
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                    ></textarea>
+                  </div>
+                  
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
+                  </button>
+                  
+                  {submitStatus === 'success' && (
+                    <div className={styles.successMessage}>
+                      ¡Mensaje enviado con éxito! Te contactaremos pronto.
+                    </div>
+                  )}
+                  
+                  {submitStatus === 'error' && (
+                    <div className={styles.errorMessage}>
+                      Hubo un error al enviar el mensaje. Por favor intenta de nuevo.
+                    </div>
+                  )}
+                </form>
               </motion.div>
 
               {/* Información de Contacto */}
@@ -112,36 +243,9 @@ export default function ContactoPage() {
                   ))}
                 </div>
 
-                <div className={styles.map}>
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.552153870283!2d-99.162974!3d19.428858!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff1c5e9b6e2b%3A0x8e0c8b2e5e8c0b2e!2sPaseo%20de%20la%20Reforma%2C%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1700000000000!5m2!1ses!2smx"
-                    width="100%"
-                    height="250"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  ></iframe>
-                </div>
+         
               </motion.div>
             </div>
-          </div>
-        </section>
-
-        {/* Newsletter Section */}
-        <section className={styles.newsletter}>
-          <div className="container">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className={styles.newsletterContent}
-            >
-              <h2>Boletín <span className="accent-text">Técnico</span></h2>
-              <p>Recibe las últimas novedades en infraestructura tecnológica</p>
-              <NewsletterForm />
-            </motion.div>
           </div>
         </section>
 
@@ -157,8 +261,8 @@ export default function ContactoPage() {
             >
               <h2>¿Prefieres atención inmediata?</h2>
               <p>
-                Llámanos directamente al <strong>(55) 1234 5678</strong> o 
-                escríbenos a <strong>contacto@vanadiumtech.com.mx</strong>
+                Llámanos directamente al <strong>(55) 1376 3758</strong> o 
+                escríbenos a <strong>contact@vanadiumtech.com.mx</strong>
               </p>
             </motion.div>
           </div>
