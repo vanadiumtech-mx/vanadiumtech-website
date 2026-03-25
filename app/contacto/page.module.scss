@@ -1,0 +1,225 @@
+// app/contacto/page.module.scss
+.main {
+  overflow-x: hidden;
+}
+
+// Hero Section
+.hero {
+  padding: 8rem 0 4rem;
+  background: linear-gradient(135deg, var(--background) 0%, rgba(0, 229, 255, 0.05) 100%);
+}
+
+.heroContent {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+}
+
+// Contact Section
+.contactSection {
+  padding: 5rem 0;
+  background: var(--background);
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+}
+
+// Form Styles
+.formContainer {
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.form {
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+
+  .formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(10, 37, 64, 0.5);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    &::placeholder {
+      color: var(--gray);
+    }
+  }
+
+  select {
+    cursor: pointer;
+    
+    option {
+      background: var(--primary);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  button {
+    width: 100%;
+    font-size: 1rem;
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.successMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--accent);
+  text-align: center;
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff0000;
+  border-radius: 0.5rem;
+  color: #ff0000;
+  text-align: center;
+}
+
+// Info Styles
+.infoContainer {
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoCard {
+  background: rgba(10, 37, 64, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 229, 255, 0.3);
+  }
+}
+
+.infoIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.infoCard h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.infoCard p {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.map {
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+
+  iframe {
+    display: block;
+  }
+}
+
+// CTA Section
+.cta {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.05) 0%, var(--background) 100%);
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 600px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: var(--gray);
+    font-size: 1.1rem;
+    line-height: 1.6;
+
+    strong {
+      color: var(--accent);
+    }
+  }
+}

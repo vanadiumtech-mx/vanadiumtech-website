@@ -1,0 +1,112 @@
+// app/components/ContactForm/ContactForm.module.scss
+.form {
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(10, 37, 64, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 0.5rem;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+  }
+
+  &::placeholder {
+    color: var(--gray);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.formGroup select {
+  cursor: pointer;
+
+  option {
+    background: var(--primary);
+  }
+}
+
+.formGroup textarea {
+  resize: vertical;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 2px solid var(--background);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.successMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--accent);
+  text-align: center;
+  animation: slideIn 0.3s ease;
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff0000;
+  border-radius: 0.5rem;
+  color: #ff0000;
+  text-align: center;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
