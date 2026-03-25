@@ -119,6 +119,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // IDs de Google Tag Manager y Google Analytics
+  const GTM_ID = 'GTM-NCC2SCH8'
+  const GA_ID = 'G-DE4VR93WZY'
+
   return (
     <html lang="es" className={`${inter.variable} ${sora.variable}`}>
       <head>
@@ -130,16 +134,35 @@ export default function RootLayout({
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
               j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-NCC2SCH8');
+              })(window,document,'script','dataLayer','${GTM_ID}');
             `,
           }}
         />
-        {/* End Google Tag Manager */}
+        
+        {/* Google Analytics (gtag.js) - Código recomendado por Google */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}', {
+                page_path: window.location.pathname,
+                send_page_view: true
+              });
+            `,
+          }}
+        />
         
         {/* Preconexión a dominios externos para mejorar rendimiento */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
         
         {/* Meta tags adicionales para SEO */}
         <meta name="geo.region" content="MX-DIF" />
@@ -171,7 +194,6 @@ export default function RootLayout({
               "sameAs": [
                 "https://www.linkedin.com/company/vanadium-tech",
                 "https://twitter.com/vanadiumtech",
-                // Agrega más redes sociales aquí
               ],
               "address": {
                 "@type": "PostalAddress",
@@ -261,13 +283,12 @@ export default function RootLayout({
         {/* Google Tag Manager (noscript) - Justo después de la etiqueta de apertura <body> */}
         <noscript>
           <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-NCC2SCH8"
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0" 
             width="0" 
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-        {/* End Google Tag Manager (noscript) */}
         
         {children}
       </body>
