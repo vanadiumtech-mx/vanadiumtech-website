@@ -21,8 +21,12 @@ export default function CTA() {
             soluciones de alto rendimiento para tu organización.
           </p>
           <div className={styles.buttons}>
-            <button className="btn btn-primary">Solicitar Asesoría</button>
-            <button className="btn btn-secondary">Conocer más</button>
+            <a href="/contacto" className="btn btn-primary">
+              Solicitar Asesoría
+            </a>
+            <a href="/servicios" className="btn btn-secondary">
+              Conocer más
+            </a>
           </div>
         </motion.div>
       </div>
