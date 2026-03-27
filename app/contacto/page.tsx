@@ -20,22 +20,122 @@ export default function ContactoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
+  // Función para sanitizar texto y prevenir XSS
+  const sanitizeInput = (input: string): string => {
+    return input
+      .replace(/[<>]/g, '') // Eliminar caracteres peligrosos
+      .trim()
+      .slice(0, 1000) // Limitar longitud máxima
+  }
+
+  // Validación de email
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  // Validación de teléfono (solo números y caracteres permitidos)
+  const isValidPhone = (phone: string): boolean => {
+    const phoneRegex = /^[0-9+\-\s()]{8,20}$/
+    return phoneRegex.test(phone)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setSubmitStatus('idle')
     
-    // Simular envío de formulario
-    setTimeout(() => {
+    // Sanitizar todos los campos del formulario
+    const sanitizedData = {
+      name: sanitizeInput(formData.name),
+      email: sanitizeInput(formData.email),
+      phone: sanitizeInput(formData.phone),
+      company: sanitizeInput(formData.company),
+      service: sanitizeInput(formData.service),
+      message: sanitizeInput(formData.message)
+    }
+
+    // Validaciones adicionales en el cliente
+    if (!sanitizedData.name || sanitizedData.name.length < 2) {
+      setSubmitStatus('error')
       setIsSubmitting(false)
-      setSubmitStatus('success')
       setTimeout(() => setSubmitStatus('idle'), 5000)
-    }, 1500)
+      return
+    }
+
+    if (!isValidEmail(sanitizedData.email)) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+      return
+    }
+
+    if (!isValidPhone(sanitizedData.phone)) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+      return
+    }
+
+    if (!sanitizedData.service || sanitizedData.service === 'Selecciona un servicio') {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+      return
+    }
+
+    if (!sanitizedData.message || sanitizedData.message.length < 10) {
+      setSubmitStatus('error')
+      setIsSubmitting(false)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+      return
+    }
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sanitizedData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubmitStatus('success')
+        // Limpiar formulario después de envío exitoso
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          service: '',
+          message: ''
+        })
+        setTimeout(() => setSubmitStatus('idle'), 5000)
+      } else {
+        console.error('Error:', data.error)
+        setSubmitStatus('error')
+        setTimeout(() => setSubmitStatus('idle'), 5000)
+      }
+    } catch (error) {
+      console.error('Error al enviar:', error)
+      setSubmitStatus('error')
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    // Sanitizar en tiempo real para prevenir XSS
+    const value = e.target.value
+    const sanitizedValue = value.replace(/[<>]/g, '')
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: sanitizedValue
     })
   }
 
@@ -130,6 +230,7 @@ export default function ContactoPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      maxLength={100}
                     />
                   </div>
                   
@@ -142,6 +243,7 @@ export default function ContactoPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        maxLength={100}
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -152,6 +254,7 @@ export default function ContactoPage() {
                         value={formData.phone}
                         onChange={handleChange}
                         required
+                        maxLength={20}
                       />
                     </div>
                   </div>
@@ -164,6 +267,7 @@ export default function ContactoPage() {
                         placeholder="Empresa / Institución"
                         value={formData.company}
                         onChange={handleChange}
+                        maxLength={100}
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -190,6 +294,7 @@ export default function ContactoPage() {
                       value={formData.message}
                       onChange={handleChange}
                       required
+                      maxLength={1000}
                     ></textarea>
                   </div>
                   
@@ -209,7 +314,7 @@ export default function ContactoPage() {
                   
                   {submitStatus === 'error' && (
                     <div className={styles.errorMessage}>
-                      Hubo un error al enviar el mensaje. Por favor intenta de nuevo.
+                      Hubo un error al enviar el mensaje. Por favor verifica que todos los campos sean correctos e intenta de nuevo.
                     </div>
                   )}
                 </form>
