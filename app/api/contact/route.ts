@@ -3,21 +3,29 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   console.log('📝 Recibida solicitud POST en /api/contact')
+  console.log('🔍 Variables de entorno disponibles:')
+  console.log('- NEXT_PUBLIC_SUPABASE_URL:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
+  console.log('- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY)
+  console.log('- NEXT_PUBLIC_SUPABASE_ANON_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   
   try {
     // Verificar variables de entorno primero
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 
+                        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl) {
       console.error('❌ NEXT_PUBLIC_SUPABASE_URL no está disponible en el servidor')
       return NextResponse.json(
-        { error: 'Error de configuración del servidor' },
+        { error: 'Error de configuración del servidor: URL no disponible' },
         { status: 500 }
       )
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY) {
-      console.error('❌ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY no está disponible en el servidor')
+    if (!supabaseKey) {
+      console.error('❌ No hay clave de Supabase disponible')
       return NextResponse.json(
-        { error: 'Error de configuración del servidor' },
+        { error: 'Error de configuración del servidor: clave no disponible' },
         { status: 500 }
       )
     }
@@ -30,12 +38,21 @@ export async function POST(request: Request) {
     
     // Parsear body
     const body = await request.json()
-    console.log('📦 Body recibido:', { ...body, message: body.message?.substring(0, 50) + '...' })
+    console.log('📦 Body recibido:', { 
+      ...body, 
+      message: body.message?.substring(0, 50) + '...' 
+    })
 
     // Validar datos requeridos
     const { name, email, phone, service, message } = body
     if (!name || !email || !phone || !service || !message) {
-      console.error('❌ Campos faltantes:', { name: !!name, email: !!email, phone: !!phone, service: !!service, message: !!message })
+      console.error('❌ Campos faltantes:', { 
+        name: !!name, 
+        email: !!email, 
+        phone: !!phone, 
+        service: !!service, 
+        message: !!message 
+      })
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
         { status: 400 }
@@ -56,7 +73,7 @@ export async function POST(request: Request) {
       status: 'PENDING'
     }
     
-    console.log('💾 Intentando insertar en Supabase:', { ...insertData, message: insertData.message.substring(0, 50) + '...' })
+    console.log('💾 Intentando insertar en Supabase')
     
     const { data, error } = await supabase
       .from('leads')
@@ -73,7 +90,6 @@ export async function POST(request: Request) {
         hint: error.hint
       })
       
-      // Devolver mensaje de error más específico
       return NextResponse.json(
         { 
           error: 'Error al guardar el mensaje',
@@ -83,7 +99,7 @@ export async function POST(request: Request) {
       )
     }
 
-    console.log('✅ Mensaje guardado exitosamente:', data)
+    console.log('✅ Mensaje guardado exitosamente')
     
     return NextResponse.json(
       { 

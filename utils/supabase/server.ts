@@ -6,7 +6,9 @@ export const createClient = async () => {
     const cookieStore = await cookies()
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+    // Intentar obtener la clave de múltiples fuentes
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 
+                        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     // Verificar que las variables existen
     if (!supabaseUrl) {
@@ -15,12 +17,16 @@ export const createClient = async () => {
     }
 
     if (!supabaseKey) {
-      console.error('❌ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY no está configurada')
-      throw new Error('Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY environment variable')
+      console.error('❌ Ninguna clave de Supabase está configurada')
+      console.error('Intenté con:')
+      console.error('- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY)
+      console.error('- NEXT_PUBLIC_SUPABASE_ANON_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      throw new Error('Missing Supabase API key')
     }
 
     console.log('✅ Supabase client inicializado correctamente')
-    console.log('URL:', supabaseUrl.substring(0, 30) + '...') // Log parcial por seguridad
+    console.log('URL:', supabaseUrl)
+    console.log('Key disponible:', supabaseKey.substring(0, 20) + '...')
 
     return createServerClient(
       supabaseUrl,
