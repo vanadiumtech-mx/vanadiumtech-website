@@ -1,9 +1,19 @@
 // app/api/contact/route.ts
 import { NextResponse } from 'next/server'
-import { Resend } from 'resend'
 
-// Inicializar Resend
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Inicializar Resend solo si la API key está disponible
+let resend: any = null
+try {
+  const Resend = require('resend').Resend
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+    console.log('✅ Resend inicializado correctamente')
+  } else {
+    console.warn('⚠️ RESEND_API_KEY no configurada, los correos no se enviarán')
+  }
+} catch (error) {
+  console.warn('⚠️ Error al inicializar Resend:', error)
+}
 
 export async function POST(request: Request) {
   console.log('=========================================')
@@ -84,151 +94,150 @@ export async function POST(request: Request) {
     const savedData = await response.json()
     console.log('✅ Datos guardados en Supabase')
     
-    // 6. Enviar correo electrónico
-    console.log('📧 Enviando correo electrónico...')
-    
-    const emailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nuevo mensaje de contacto - Vanadium Tech</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-          }
-          .header {
-            background-color: #2c3e50;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-          }
-          .header h1 {
-            margin: 0;
-            font-size: 24px;
-          }
-          .content {
-            padding: 30px;
-          }
-          .field {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-          }
-          .field-label {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-          }
-          .field-value {
-            color: #555;
-            margin-top: 5px;
-          }
-          .message-content {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-          }
-          .footer {
-            background-color: #f4f4f4;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-          }
-          .badge {
-            display: inline-block;
-            background-color: #3498db;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            margin-left: 10px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>📬 Nuevo mensaje de contacto</h1>
-            <p>Vanadium Tech - Formulario web</p>
-          </div>
-          <div class="content">
-            <div class="field">
-              <div class="field-label">👤 Nombre completo:</div>
-              <div class="field-value"><strong>${escapeHtml(name)}</strong></div>
+    // 6. Enviar correo electrónico (solo si Resend está configurado)
+    if (resend && process.env.RESEND_API_KEY) {
+      console.log('📧 Enviando correo electrónico...')
+      
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Nuevo mensaje de contacto - Vanadium Tech</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              background-color: #f4f4f4;
+              margin: 0;
+              padding: 20px;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #fff;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              overflow: hidden;
+            }
+            .header {
+              background-color: #2c3e50;
+              color: #fff;
+              padding: 20px;
+              text-align: center;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 24px;
+            }
+            .content {
+              padding: 30px;
+            }
+            .field {
+              margin-bottom: 20px;
+              border-bottom: 1px solid #eee;
+              padding-bottom: 10px;
+            }
+            .field-label {
+              font-weight: bold;
+              color: #2c3e50;
+              margin-bottom: 5px;
+            }
+            .field-value {
+              color: #555;
+              margin-top: 5px;
+            }
+            .message-content {
+              background-color: #f9f9f9;
+              padding: 15px;
+              border-radius: 5px;
+              margin-top: 10px;
+            }
+            .footer {
+              background-color: #f4f4f4;
+              padding: 20px;
+              text-align: center;
+              font-size: 12px;
+              color: #777;
+            }
+            .badge {
+              display: inline-block;
+              background-color: #3498db;
+              color: #fff;
+              padding: 3px 8px;
+              border-radius: 3px;
+              font-size: 12px;
+              margin-left: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>📬 Nuevo mensaje de contacto</h1>
+              <p>Vanadium Tech - Formulario web</p>
             </div>
-            
-            <div class="field">
-              <div class="field-label">📧 Correo electrónico:</div>
-              <div class="field-value"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></div>
-            </div>
-            
-            <div class="field">
-              <div class="field-label">📞 Teléfono:</div>
-              <div class="field-value">${escapeHtml(phone)}</div>
-            </div>
-            
-            ${body.company ? `
-            <div class="field">
-              <div class="field-label">🏢 Empresa / Institución:</div>
-              <div class="field-value">${escapeHtml(body.company)}</div>
-            </div>
-            ` : ''}
-            
-            <div class="field">
-              <div class="field-label">🔧 Servicio de interés:</div>
-              <div class="field-value">
-                ${escapeHtml(service)}
-                <span class="badge">${escapeHtml(service)}</span>
+            <div class="content">
+              <div class="field">
+                <div class="field-label">👤 Nombre completo:</div>
+                <div class="field-value"><strong>${escapeHtml(name)}</strong></div>
+              </div>
+              
+              <div class="field">
+                <div class="field-label">📧 Correo electrónico:</div>
+                <div class="field-value"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></div>
+              </div>
+              
+              <div class="field">
+                <div class="field-label">📞 Teléfono:</div>
+                <div class="field-value">${escapeHtml(phone)}</div>
+              </div>
+              
+              ${body.company ? `
+              <div class="field">
+                <div class="field-label">🏢 Empresa / Institución:</div>
+                <div class="field-value">${escapeHtml(body.company)}</div>
+              </div>
+              ` : ''}
+              
+              <div class="field">
+                <div class="field-label">🔧 Servicio de interés:</div>
+                <div class="field-value">
+                  ${escapeHtml(service)}
+                  <span class="badge">${escapeHtml(service)}</span>
+                </div>
+              </div>
+              
+              <div class="field">
+                <div class="field-label">💬 Mensaje:</div>
+                <div class="message-content">
+                  ${escapeHtml(message).replace(/\n/g, '<br>')}
+                </div>
               </div>
             </div>
-            
-            <div class="field">
-              <div class="field-label">💬 Mensaje:</div>
-              <div class="message-content">
-                ${escapeHtml(message).replace(/\n/g, '<br>')}
-              </div>
+            <div class="footer">
+              <p>Este mensaje fue enviado a través del formulario de contacto de Vanadium Tech.</p>
+              <p>Fecha: ${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}</p>
+              <p>ID de referencia: ${savedData[0]?.id || 'N/A'}</p>
             </div>
           </div>
-          <div class="footer">
-            <p>Este mensaje fue enviado a través del formulario de contacto de Vanadium Tech.</p>
-            <p>Fecha: ${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}</p>
-            <p>ID de referencia: ${savedData[0]?.id || 'N/A'}</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `
-    
-    // Función para escapar HTML y prevenir XSS
-    function escapeHtml(str: string): string {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-    }
-    
-    // Enviar correo con Resend
-    if (process.env.RESEND_API_KEY) {
+        </body>
+        </html>
+      `
+      
+      function escapeHtml(str: string): string {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+      }
+      
       try {
+        // Enviar correo al equipo
         const emailResponse = await resend.emails.send({
           from: process.env.EMAIL_FROM || 'Vanadium Tech <noreply@vanadiumtech.com.mx>',
           to: process.env.EMAIL_TO || 'contact@vanadiumtech.com.mx',
@@ -237,9 +246,9 @@ export async function POST(request: Request) {
           replyTo: email,
         })
         
-        console.log('✅ Correo enviado exitosamente:', emailResponse)
+        console.log('✅ Correo enviado exitosamente al equipo:', emailResponse)
         
-        // Opcional: Enviar correo de confirmación al cliente
+        // Enviar correo de confirmación al cliente
         await resend.emails.send({
           from: process.env.EMAIL_FROM || 'Vanadium Tech <noreply@vanadiumtech.com.mx>',
           to: email,
@@ -280,10 +289,10 @@ export async function POST(request: Request) {
         
       } catch (emailError) {
         console.error('❌ Error al enviar correo:', emailError)
-        // No fallamos la petición si el correo falla, solo registramos el error
+        // No fallamos la petición si el correo falla
       }
     } else {
-      console.warn('⚠️ RESEND_API_KEY no configurada, no se envió correo')
+      console.warn('⚠️ Resend no configurado, los correos no se enviarán')
     }
     
     console.log('✅ Proceso completado exitosamente')
