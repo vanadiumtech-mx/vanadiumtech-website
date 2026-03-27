@@ -19,6 +19,7 @@ export default function ContactoPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [errorDetails, setErrorDetails] = useState<string>('')
 
   // Función para sanitizar texto y prevenir XSS
   const sanitizeInput = (input: string): string => {
@@ -44,6 +45,10 @@ export default function ContactoPage() {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitStatus('idle')
+    setErrorDetails('')
+    
+    console.log('🚀 Iniciando envío de formulario')
+    console.log('📝 Datos originales:', formData)
     
     // Sanitizar todos los campos del formulario
     const sanitizedData = {
@@ -55,43 +60,72 @@ export default function ContactoPage() {
       message: sanitizeInput(formData.message)
     }
 
+    console.log('🧹 Datos sanitizados:', sanitizedData)
+
     // Validaciones adicionales en el cliente
     if (!sanitizedData.name || sanitizedData.name.length < 2) {
+      console.error('❌ Error: Nombre inválido')
+      setErrorDetails('El nombre debe tener al menos 2 caracteres')
       setSubmitStatus('error')
       setIsSubmitting(false)
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
       return
     }
 
     if (!isValidEmail(sanitizedData.email)) {
+      console.error('❌ Error: Email inválido')
+      setErrorDetails('El correo electrónico no es válido')
       setSubmitStatus('error')
       setIsSubmitting(false)
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
       return
     }
 
     if (!isValidPhone(sanitizedData.phone)) {
+      console.error('❌ Error: Teléfono inválido')
+      setErrorDetails('El teléfono debe tener entre 8 y 20 caracteres y solo números, +, -, espacios o ()')
       setSubmitStatus('error')
       setIsSubmitting(false)
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
       return
     }
 
     if (!sanitizedData.service || sanitizedData.service === 'Selecciona un servicio') {
+      console.error('❌ Error: Servicio no seleccionado')
+      setErrorDetails('Por favor selecciona un servicio')
       setSubmitStatus('error')
       setIsSubmitting(false)
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
       return
     }
 
     if (!sanitizedData.message || sanitizedData.message.length < 10) {
+      console.error('❌ Error: Mensaje demasiado corto')
+      setErrorDetails('El mensaje debe tener al menos 10 caracteres')
       setSubmitStatus('error')
       setIsSubmitting(false)
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
       return
     }
     
     try {
+      console.log('📤 Enviando petición a /api/contact')
+      
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -100,9 +134,14 @@ export default function ContactoPage() {
         body: JSON.stringify(sanitizedData),
       })
 
+      console.log('📡 Status de respuesta:', response.status)
+      console.log('📡 Headers:', response.headers)
+
       const data = await response.json()
+      console.log('📦 Datos de respuesta:', data)
 
       if (response.ok) {
+        console.log('✅ Formulario enviado con éxito')
         setSubmitStatus('success')
         // Limpiar formulario después de envío exitoso
         setFormData({
@@ -115,16 +154,30 @@ export default function ContactoPage() {
         })
         setTimeout(() => setSubmitStatus('idle'), 5000)
       } else {
-        console.error('Error:', data.error)
+        console.error('❌ Error en la respuesta:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        })
+        setErrorDetails(data.details || data.error || 'Error desconocido')
         setSubmitStatus('error')
-        setTimeout(() => setSubmitStatus('idle'), 5000)
+        setTimeout(() => {
+          setSubmitStatus('idle')
+          setErrorDetails('')
+        }, 5000)
       }
     } catch (error) {
-      console.error('Error al enviar:', error)
+      console.error('❌ Error de red o excepción:', error)
+      console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace')
+      setErrorDetails(error instanceof Error ? error.message : 'Error de conexión con el servidor')
       setSubmitStatus('error')
-      setTimeout(() => setSubmitStatus('idle'), 5000)
+      setTimeout(() => {
+        setSubmitStatus('idle')
+        setErrorDetails('')
+      }, 5000)
     } finally {
       setIsSubmitting(false)
+      console.log('🏁 Proceso de envío finalizado')
     }
   }
 
@@ -314,7 +367,12 @@ export default function ContactoPage() {
                   
                   {submitStatus === 'error' && (
                     <div className={styles.errorMessage}>
-                      Hubo un error al enviar el mensaje. Por favor verifica que todos los campos sean correctos e intenta de nuevo.
+                      <strong>Error al enviar el mensaje:</strong>
+                      <br />
+                      {errorDetails || 'Por favor verifica que todos los campos sean correctos e intenta de nuevo.'}
+                      <br />
+                      <br />
+                      <small>Revisa la consola del navegador (F12) para más detalles.</small>
                     </div>
                   )}
                 </form>

@@ -2,50 +2,44 @@
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  console.log('📝 Recibida solicitud POST en /api/contact')
+  console.log('=========================================')
+  console.log('📝 API Contact - Iniciando proceso')
+  console.log('=========================================')
   
   try {
-    // Parsear body
+    // 1. Verificar variables de entorno
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    // IMPORTANTE: Usar la clave de servicio para operaciones del servidor
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    console.log('🔍 Verificando variables de entorno:')
+    console.log('  - URL:', supabaseUrl ? '✅ Presente' : '❌ Faltante')
+    console.log('  - SERVICE ROLE KEY:', supabaseKey ? '✅ Presente' : '❌ Faltante')
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('❌ Variables de entorno faltantes')
+      return NextResponse.json(
+        { error: 'Configuración del servidor incompleta' },
+        { status: 500 }
+      )
+    }
+    
+    // 2. Parsear body
     const body = await request.json()
-    console.log('📦 Body recibido:', { 
-      ...body, 
-      message: body.message?.substring(0, 50) + '...' 
-    })
-
-    // Validar datos requeridos
+    console.log('📦 Datos recibidos:', body)
+    
+    // 3. Validar campos
     const { name, email, phone, service, message } = body
     
     if (!name || !email || !phone || !service || !message) {
-      console.error('❌ Campos faltantes:', { 
-        name: !!name, 
-        email: !!email, 
-        phone: !!phone, 
-        service: !!service, 
-        message: !!message 
-      })
+      console.error('❌ Campos faltantes')
       return NextResponse.json(
         { error: 'Faltan campos requeridos' },
         { status: 400 }
       )
     }
-
-    // Obtener variables de entorno
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-
-    console.log('🔍 Variables de entorno:')
-    console.log('- URL disponible:', !!supabaseUrl)
-    console.log('- Key disponible:', !!supabaseKey)
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('❌ Variables de entorno faltantes')
-      return NextResponse.json(
-        { error: 'Error de configuración del servidor' },
-        { status: 500 }
-      )
-    }
-
-    // Preparar datos para Supabase
+    
+    // 4. Preparar datos para insertar
     const insertData = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -56,11 +50,14 @@ export async function POST(request: Request) {
       source: 'CONTACT_FORM',
       status: 'PENDING'
     }
-
-    console.log('💾 Insertando datos en Supabase...')
-
-    // Llamar directamente a la API REST de Supabase
-    const response = await fetch(`${supabaseUrl}/rest/v1/leads`, {
+    
+    console.log('💾 Datos a insertar:', insertData)
+    
+    // 5. Intentar inserción con la clave de servicio
+    const url = `${supabaseUrl}/rest/v1/leads`
+    console.log('🌐 URL:', url)
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'apikey': supabaseKey,
@@ -70,41 +67,39 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify(insertData)
     })
-
-    console.log('📡 Respuesta de Supabase:', response.status, response.statusText)
-
+    
+    console.log('📡 Status de respuesta:', response.status)
+    
+    // 6. Leer respuesta
+    const responseText = await response.text()
+    console.log('📄 Respuesta:', responseText)
+    
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ Error de Supabase:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      })
-      
+      console.error('❌ Error en Supabase:', response.status, responseText)
       return NextResponse.json(
         { 
           error: 'Error al guardar el mensaje',
-          details: `Supabase error: ${response.status} ${response.statusText}`
+          details: responseText
         },
-        { status: 500 }
+        { status: response.status }
       )
     }
-
-    const data = await response.json()
-    console.log('✅ Mensaje guardado exitosamente:', data)
-
+    
+    // 7. Éxito
+    console.log('✅ Éxito! Mensaje guardado correctamente')
+    console.log('=========================================')
+    
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Mensaje enviado correctamente',
-        data: data 
+        message: 'Mensaje enviado correctamente'
       },
       { status: 200 }
     )
-
+    
   } catch (error) {
-    console.error('❌ Error general en la API:', error)
-    console.error('Stack:', error instanceof Error ? error.stack : 'No stack')
+    console.error('❌ Error catastrófico:', error)
+    console.log('=========================================')
     
     return NextResponse.json(
       { 
