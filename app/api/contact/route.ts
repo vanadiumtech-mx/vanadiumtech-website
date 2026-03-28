@@ -6,16 +6,58 @@ export async function POST(request: Request) {
   console.log('📝 API Contact - Iniciando proceso')
   console.log('=========================================')
   
+  // ============================================
+  // DEBUG EXTREMO - Ver todas las variables de entorno
+  // ============================================
+  console.log('🔍 DEBUG COMPLETO DE VARIABLES DE ENTORNO:')
+  console.log('----------------------------------------')
+  
+  // Listar todas las variables disponibles
+  const allEnvVars = Object.keys(process.env)
+  console.log('📋 Total de variables:', allEnvVars.length)
+  console.log('📋 Variables que contienen "RESEND":', allEnvVars.filter(k => k.includes('RESEND')))
+  console.log('📋 Variables que contienen "EMAIL":', allEnvVars.filter(k => k.includes('EMAIL')))
+  console.log('📋 Variables que contienen "SUPABASE":', allEnvVars.filter(k => k.includes('SUPABASE')))
+  
+  // Verificar cada variable específica
+  console.log('----------------------------------------')
+  console.log('🔍 VERIFICACIÓN ESPECÍFICA:')
+  console.log('  - process.env.RESEND_API_KEY:', process.env.RESEND_API_KEY ? '✅ Presente' : '❌ Faltante')
+  console.log('  - process.env.RESEND_API_KEY valor:', process.env.RESEND_API_KEY ? `"${process.env.RESEND_API_KEY.substring(0, 10)}..."` : 'no')
+  console.log('  - process.env.RESEND_API_KEY tipo:', typeof process.env.RESEND_API_KEY)
+  console.log('  - process.env.RESEND_API_KEY longitud:', process.env.RESEND_API_KEY?.length || 0)
+  console.log('----------------------------------------')
+  console.log('  - process.env.EMAIL_FROM:', process.env.EMAIL_FROM ? '✅ Presente' : '❌ Faltante')
+  console.log('  - process.env.EMAIL_TO:', process.env.EMAIL_TO ? '✅ Presente' : '❌ Faltante')
+  console.log('----------------------------------------')
+  console.log('  - process.env.NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Presente' : '❌ Faltante')
+  console.log('  - process.env.SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Presente' : '❌ Faltante')
+  console.log('=========================================')
+  
   try {
     // 1. Verificar variables de entorno
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    const resendApiKey = process.env.RESEND_API_KEY
     
-    console.log('🔍 Verificando variables de entorno:')
+    // Intentar obtener RESEND_API_KEY de diferentes formas
+    let resendApiKey = process.env.RESEND_API_KEY
+    
+    // Si no está en RESEND_API_KEY, buscar en otras variantes
+    if (!resendApiKey) {
+      console.log('⚠️ Buscando RESEND_API_KEY en otras variantes...')
+      resendApiKey = process.env.RESEND_API_KEY_ALT || 
+                      process.env.RESEND_KEY || 
+                      process.env.RESEND_API ||
+                      process.env.RESEND
+      if (resendApiKey) {
+        console.log('✅ Encontrada en variante alternativa')
+      }
+    }
+    
+    console.log('🔍 Verificación final:')
     console.log('  - URL Supabase:', supabaseUrl ? '✅ Presente' : '❌ Faltante')
     console.log('  - SERVICE ROLE KEY:', supabaseKey ? '✅ Presente' : '❌ Faltante')
-    console.log('  - RESEND API KEY:', resendApiKey ? '✅ Presente' : '❌ Faltante')
+    console.log('  - RESEND API KEY (final):', resendApiKey ? '✅ Presente' : '❌ Faltante')
     
     if (!supabaseUrl || !supabaseKey) {
       console.error('❌ Variables de entorno de Supabase faltantes')
@@ -84,12 +126,15 @@ export async function POST(request: Request) {
     // 6. Enviar correo electrónico (inicializar Resend dentro de la función)
     if (resendApiKey) {
       console.log('📧 Preparando envío de correos...')
+      console.log('🔑 Usando RESEND_API_KEY:', resendApiKey.substring(0, 10) + '...')
       
       try {
         // Importar Resend dinámicamente dentro de la función
+        console.log('📦 Importando Resend...')
         const { Resend } = await import('resend')
-        const resend = new Resend(resendApiKey)
+        console.log('✅ Resend importado correctamente')
         
+        const resend = new Resend(resendApiKey)
         console.log('✅ Resend inicializado correctamente')
         
         // Función para escapar HTML
@@ -231,10 +276,19 @@ export async function POST(request: Request) {
           </html>
         `
         
+        const emailFrom = process.env.EMAIL_FROM || 'Vanadium Tech <noreply@vanadiumtech.com.mx>'
+        const emailTo = process.env.EMAIL_TO || 'contact@vanadiumtech.com.mx'
+        
+        console.log('📧 Configuración de correo:')
+        console.log('  - FROM:', emailFrom)
+        console.log('  - TO:', emailTo)
+        console.log('  - REPLY_TO:', email)
+        
         // Enviar correo al equipo
+        console.log('📤 Enviando correo al equipo...')
         const emailToTeam = await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'Vanadium Tech <noreply@vanadiumtech.com.mx>',
-          to: process.env.EMAIL_TO || 'contact@vanadiumtech.com.mx',
+          from: emailFrom,
+          to: emailTo,
           subject: `Nuevo mensaje de ${name} - Vanadium Tech`,
           html: emailHtml,
           replyTo: email,
@@ -243,8 +297,9 @@ export async function POST(request: Request) {
         console.log('✅ Correo enviado exitosamente al equipo:', emailToTeam)
         
         // Enviar correo de confirmación al cliente
+        console.log('📤 Enviando correo de confirmación al cliente...')
         const emailToClient = await resend.emails.send({
-          from: process.env.EMAIL_FROM || 'Vanadium Tech <noreply@vanadiumtech.com.mx>',
+          from: emailFrom,
           to: email,
           subject: 'Hemos recibido tu mensaje - Vanadium Tech',
           html: `
@@ -284,10 +339,13 @@ export async function POST(request: Request) {
       } catch (emailError) {
         console.error('❌ Error al enviar correo:', emailError)
         console.error('Detalles del error:', emailError instanceof Error ? emailError.message : 'Error desconocido')
+        console.error('Stack:', emailError instanceof Error ? emailError.stack : 'No stack')
         // No fallamos la petición si el correo falla
       }
     } else {
       console.warn('⚠️ RESEND_API_KEY no configurada, los correos no se enviarán')
+      console.warn('💡 Sugerencia: Verifica que la variable esté configurada en Vercel Settings → Environment Variables')
+      console.warn('💡 El nombre exacto debe ser: RESEND_API_KEY')
     }
     
     console.log('✅ Proceso completado exitosamente')
