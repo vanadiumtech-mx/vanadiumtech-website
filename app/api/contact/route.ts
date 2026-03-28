@@ -7,22 +7,42 @@ export async function POST(request: Request) {
   console.log('=========================================')
   
   try {
-    // 1. Verificar variables de entorno con los nuevos nombres
+    // DIAGNÓSTICO: Listar todas las variables de entorno disponibles
+    console.log('🔍 LISTADO COMPLETO DE VARIABLES DE ENTORNO:')
+    const allEnvVars = Object.keys(process.env).filter(key => 
+      key.includes('EMAIL') || key.includes('SUPABASE')
+    )
+    console.log('Variables relacionadas con EMAIL y SUPABASE:', allEnvVars)
+    
+    // Verificar cada variable individualmente
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    // Usar los nuevos nombres con fallback a los viejos para compatibilidad
-    const emailUser = process.env.EMAIL_SERVICE_USER || process.env.EMAIL_USER
-    const emailPass = process.env.EMAIL_SERVICE_PASS || process.env.EMAIL_PASS
-    const emailTo = process.env.EMAIL_RECIPIENT || process.env.EMAIL_TO || 'contact@vanadiumtech.com.mx'
-    const emailFrom = process.env.EMAIL_SENDER || process.env.EMAIL_FROM || 'Vanadium Tech <vanadiumtec.co@gmail.com>'
+    const emailUser1 = process.env.EMAIL_SERVICE_USER
+    const emailUser2 = process.env.EMAIL_USER
+    const emailPass1 = process.env.EMAIL_SERVICE_PASS
+    const emailPass2 = process.env.EMAIL_PASS
+    const emailTo1 = process.env.EMAIL_RECIPIENT
+    const emailTo2 = process.env.EMAIL_TO
+    const emailFrom1 = process.env.EMAIL_SENDER
+    const emailFrom2 = process.env.EMAIL_FROM
     
-    console.log('🔍 Verificando variables de entorno:')
-    console.log('  - URL Supabase:', supabaseUrl ? '✅ Presente' : '❌ Faltante')
-    console.log('  - SERVICE ROLE KEY:', supabaseKey ? '✅ Presente' : '❌ Faltante')
-    console.log('  - EMAIL_USER:', emailUser ? '✅ Presente' : '❌ Faltante')
-    console.log('  - EMAIL_PASS:', emailPass ? '✅ Presente' : '❌ Faltante')
-    console.log('  - EMAIL_TO:', emailTo)
-    console.log('  - EMAIL_FROM:', emailFrom)
+    console.log('🔍 Verificando variables de entorno UNA POR UNA:')
+    console.log('  - NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅' : '❌')
+    console.log('  - SUPABASE_SERVICE_ROLE_KEY:', supabaseKey ? '✅' : '❌')
+    console.log('  - EMAIL_SERVICE_USER:', emailUser1 ? '✅' : '❌')
+    console.log('  - EMAIL_USER:', emailUser2 ? '✅' : '❌')
+    console.log('  - EMAIL_SERVICE_PASS:', emailPass1 ? '✅' : '❌')
+    console.log('  - EMAIL_PASS:', emailPass2 ? '✅' : '❌')
+    console.log('  - EMAIL_RECIPIENT:', emailTo1 ? '✅' : '❌')
+    console.log('  - EMAIL_TO:', emailTo2 ? '✅' : '❌')
+    console.log('  - EMAIL_SENDER:', emailFrom1 ? '✅' : '❌')
+    console.log('  - EMAIL_FROM:', emailFrom2 ? '✅' : '❌')
+    
+    // Usar la primera que encuentre
+    const emailUser = emailUser1 || emailUser2
+    const emailPass = emailPass1 || emailPass2
+    const emailTo = emailTo1 || emailTo2 || 'contact@vanadiumtech.com.mx'
+    const emailFrom = emailFrom1 || emailFrom2 || 'Vanadium Tech <vanadiumtec.co@gmail.com>'
     
     if (!supabaseUrl || !supabaseKey) {
       console.error('❌ Variables de entorno de Supabase faltantes')
@@ -33,7 +53,8 @@ export async function POST(request: Request) {
     }
     
     if (!emailUser || !emailPass) {
-      console.warn('⚠️ Credenciales de email no configuradas, los correos no se enviarán')
+      console.warn('⚠️ Credenciales de email no configuradas')
+      console.warn('   Las variables disponibles son:', allEnvVars)
     }
     
     // 2. Parsear body
@@ -95,6 +116,8 @@ export async function POST(request: Request) {
     // 6. Enviar correos electrónicos con Nodemailer
     if (emailUser && emailPass) {
       console.log('📧 Enviando correos con Nodemailer...')
+      console.log('  - Usando usuario:', emailUser)
+      console.log('  - Enviando a:', emailTo)
       
       try {
         // Plantilla de correo para el equipo
@@ -168,7 +191,7 @@ export async function POST(request: Request) {
           </html>
         `
         
-        // Enviar correo al equipo usando la variable emailTo
+        // Enviar correo al equipo
         await sendEmail(
           emailTo,
           `Nuevo mensaje de ${name} - Vanadium Tech`,
@@ -220,7 +243,6 @@ export async function POST(request: Request) {
       } catch (emailError) {
         console.error('❌ Error al enviar correo:', emailError)
         console.error('Detalles:', emailError instanceof Error ? emailError.message : 'Error desconocido')
-        // No fallamos la petición si el correo falla
       }
     } else {
       console.warn('⚠️ Credenciales de email no configuradas, los correos no se enviarán')
