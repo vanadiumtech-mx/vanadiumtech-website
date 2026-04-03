@@ -282,6 +282,59 @@
   }
 }
 
+/* Google Maps Section - Nuevos estilos */
+.mapContainer {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0, 229, 255, 0.15);
+}
+
+.mapTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #00E5FF;
+  position: relative;
+  display: inline-block;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: #00E5FF;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
+}
+
+.mapWrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 229, 255, 0.15);
+  }
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 250px;
+
+    @media (max-width: 768px) {
+      height: 200px;
+    }
+  }
+}
+
 /* Bottom Section */
 .bottom {
   display: flex;
@@ -352,7 +405,8 @@
   .legalLink,
   .contactItem,
   .button,
-  .input {
+  .input,
+  .mapWrapper {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

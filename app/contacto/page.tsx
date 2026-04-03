@@ -194,36 +194,45 @@ export default function ContactoPage() {
 
   const contactInfo = [
     {
+      id: 'primary',
       icon: '📍',
       title: 'Oficina Principal',
+      address: '17th Floor Torre Magenta, Paseo de la Reforma 284, MEXICO CITY, Ciudad de Mexico, CP 06600, México',
       details: [
-        'Emiliano Zapata 16',
-        'Col. Centro Acolman',
-        'C.P. 55870, Edo. México'
-      ]
+        '17th Floor Torre Magenta',
+        'Paseo de la Reforma 284',
+        'CDMX, CP 06600, México'
+      ],
+      isPrimary: true
     },
     {
+      id: 'phone',
       icon: '📞',
       title: 'Teléfono',
       details: [
         '(55) 13763758',
-      ]
+      ],
+      isPrimary: false
     },
     {
+      id: 'email',
       icon: '✉️',
       title: 'Email',
       details: [
         'contact@vanadiumtech.com.mx',
-        'ventas@vanadiumtech.com.mx'
-      ]
+        
+      ],
+      isPrimary: false
     },
     {
+      id: 'schedule',
       icon: '🕒',
       title: 'Horario de Atención',
       details: [
         'Lunes a Viernes: 9:00 - 18:00',
         'Sábados: 9:00 - 14:00'
-      ]
+      ],
+      isPrimary: false
     }
   ]
 
@@ -390,23 +399,36 @@ export default function ContactoPage() {
                 <div className={styles.infoGrid}>
                   {contactInfo.map((info, index) => (
                     <motion.div
-                      key={info.title}
+                      key={info.id}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       viewport={{ once: true }}
-                      className={styles.infoCard}
+                      className={info.isPrimary ? styles.infoCardPrimary : styles.infoCardSecondary}
                     >
                       <div className={styles.infoIcon}>{info.icon}</div>
                       <h3>{info.title}</h3>
                       {info.details.map((detail) => (
                         <p key={detail}>{detail}</p>
                       ))}
+                      {/* Mapa dentro de la tarjeta de Oficina Principal */}
+                      {info.isPrimary && (
+                        <div className={styles.cardMapContainer}>
+                          <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.6427645259796!2d-99.16717482500077!3d19.427835140833448!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ffead366482d%3A0x2ee1f207b563cfd2!2sMagenta%20Tower!5e0!3m2!1ses-419!2smx!4v1775244946834!5m2!1ses-419!2smx" 
+                            width="100%" 
+                            height="200" 
+                            style={{ border: 0, borderRadius: '8px', marginTop: '12px' }}
+                            allowFullScreen 
+                            loading="lazy" 
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Mapa Oficina Principal - Torre Magenta"
+                          ></iframe>
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                 </div>
-
-         
               </motion.div>
             </div>
           </div>

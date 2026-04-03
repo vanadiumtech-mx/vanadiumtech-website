@@ -52,7 +52,7 @@ export default function Footer() {
               </p>
               <p className={styles.contactItem}>
                 <span className={styles.icon}>📍</span>
-                Ciudad de México, México
+                17th Floor Torre Magenta, Paseo de la Reforma 284, CDMX, CP 06600
               </p>
             </div>
           </div>
@@ -95,25 +95,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter Section */}
-          <div className={styles.newsletter}>
-            <h3 className={styles.title}>Boletín Técnico</h3>
-            <p className={styles.newsletterText}>
-              Recibe información sobre nuevas tecnologías y tendencias
-            </p>
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="tu@email.com" 
-                className={styles.input}
-                aria-label="Correo electrónico para suscripción"
-              />
-              <button type="submit" className={styles.button}>
-                Suscribir
-              </button>
-            </form>
-          </div>
         </div>
+
+
 
         {/* Bottom Section */}
         <div className={styles.bottom}>
