@@ -1,0 +1,310 @@
+// app/gobierno/page.module.scss
+.main {
+  overflow-x: hidden;
+}
+
+// Hero Section
+.hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--background) 0%, rgba(0, 229, 255, 0.05) 100%);
+  overflow: hidden;
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, rgba(0, 229, 255, 0.05) 0px, rgba(0, 229, 255, 0.05) 2px, transparent 2px, transparent 8px);
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  max-width: 800px;
+  z-index: 1;
+
+  .badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 229, 255, 0.1);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: var(--gray);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+}
+
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// Section Header
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    color: var(--gray);
+    font-size: 1.1rem;
+  }
+}
+
+// Procesos de Contratación
+.processes {
+  padding: 5rem 0;
+  background: linear-gradient(180deg, var(--background) 0%, rgba(0, 229, 255, 0.02) 100%);
+}
+
+.processesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.processCard {
+  background: rgba(10, 37, 64, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 229, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.cardIcon {
+  margin-bottom: 1.5rem;
+
+  svg {
+    filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+  }
+}
+
+.processCard h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.processCard p {
+  color: var(--gray);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.requirements {
+  list-style: none;
+  padding: 0;
+
+  li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.9rem;
+    color: var(--text);
+
+    &::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+  }
+}
+
+// Soluciones Gubernamentales
+.solutions {
+  padding: 5rem 0;
+  background: var(--background);
+}
+
+.solutionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.solutionCard {
+  background: rgba(10, 37, 64, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 229, 255, 0.3);
+
+    h3 {
+      color: var(--accent);
+    }
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--gray);
+
+      &::before {
+        content: '▹';
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+    }
+  }
+}
+
+// Documentación Legal
+.documents {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.05) 0%, var(--background) 100%);
+}
+
+.documentsWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.documentsContent {
+  .badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 229, 255, 0.1);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: var(--gray);
+    line-height: 1.6;
+  }
+}
+
+.documentsList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.docItem {
+  background: rgba(10, 37, 64, 0.5);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(0, 229, 255, 0.3);
+    transform: translateX(5px);
+  }
+}
+
+.checkmark {
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+// CTA Section
+.cta {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(10, 37, 64, 0.2) 100%);
+}
+
+.ctaContent {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.8rem;
+    }
+  }
+
+  p {
+    color: var(--gray);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+}

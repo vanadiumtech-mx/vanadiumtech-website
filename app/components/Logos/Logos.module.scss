@@ -1,0 +1,75 @@
+.logos {
+  position: relative;
+  background: rgba(10, 37, 64, 0.5);
+  border-top: 1px solid rgba(0, 229, 255, 0.08);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.08);
+  overflow: hidden;
+}
+
+.content {
+  text-align: center;
+}
+
+.subtitle {
+  color:  rgba(103, 225, 255, 0.928);
+  margin-bottom: 3rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  opacity: 0.7;
+}
+
+/* 🔥 MARQUEE (scroll infinito estilo Vercel) */
+.marquee {
+  overflow: hidden;
+  position: relative;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: scroll 25s linear infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* 🔷 LOGO ITEM */
+.logoItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+}
+
+/* 🧠 CONTENEDOR DEL LOGO */
+.logoWrapper {
+  position: relative;
+  filter: grayscale(0%) brightness(0.9);
+  opacity: .9;
+  transition: all 0.4s ease;
+
+  &:hover {
+    filter: grayscale(0%) brightness(1);
+    opacity: 1;
+    transform: translateY(-4px);
+
+    .logo {
+      filter: drop-shadow(0 0 12px rgb(221, 221, 221));
+    }
+  }
+}
+
+/* 🖼 LOGO */
+.logo {
+  object-fit: contain;
+  max-width: 120px;
+  height: auto;
+  transition: all 0.4s ease;
+}

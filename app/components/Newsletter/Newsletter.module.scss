@@ -1,0 +1,94 @@
+// app/components/Newsletter/Newsletter.module.scss
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: rgba(10, 37, 64, 0.5);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+    }
+
+    &.error {
+      border-color: #ff0000;
+    }
+
+    &::placeholder {
+      color: var(--gray);
+    }
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    background: var(--accent);
+    color: var(--background);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.successMessage,
+.errorMessage {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  animation: slideIn 0.3s ease;
+}
+
+.successMessage {
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.errorMessage {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff0000;
+  color: #ff0000;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
