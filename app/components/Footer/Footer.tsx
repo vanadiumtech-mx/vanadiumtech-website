@@ -50,10 +50,7 @@ export default function Footer() {
                 <span className={styles.icon}>📞</span>
                 (55) 1376 3758
               </p>
-              <p className={styles.contactItem}>
-                <span className={styles.icon}>📍</span>
-                Ciudad de México, México
-              </p>
+           
             </div>
           </div>
 
